@@ -473,6 +473,12 @@ class PushyPlugin extends Plugin
         $user = $this->grav['user'];
         $language = $user['language'];
 
-		return $this->grav['language']->translate(["$prefix.$key", $arg], [$language]);
+        $translation = $this->grav['language']->translate(["$prefix.$key", $arg], [$language]);
+
+        if ($translation == "$prefix.$key") {
+            $translation = $this->grav['language']->translate(["$prefix.$key", $arg], ['en']);
+        }
+
+        return $translation;
     }
 }
