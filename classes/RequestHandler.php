@@ -135,13 +135,14 @@ class RequestHandler
      */
     private function addChangedPage(array $gitItem, Pages $pages, string $adminRoute): ChangedItem
     {
+        if ($gitItem['index'] === 'D') {
+            return new ChangedItem($gitItem, GitItemType::Page);
+        }
+
         $pageFilePath = GRAV_WEBROOT . DS . GRAV_USER_PATH . DS . $gitItem['path'];
         // Remove filename from path
         $pageFolderPath = implode('/', array_slice(explode('/', $pageFilePath), 0, -1));
 
-        if ($gitItem['index'] === 'D') {
-            return new ChangedItem($gitItem, GitItemType::Page);
-        } else {
             /** @var Page */
             $page = $pages->get($pageFolderPath);
 
@@ -152,12 +153,11 @@ class RequestHandler
 
             if ($page->isModule()) {
                 $pageTitle .= ' (module)';
-                $pageSiteUrl = '';
+            $pageSiteUrl = $page->parent()->url();
                 $type = GitItemType::Module;
             }
 
             return new ChangedItem($gitItem, $type, $pageTitle, $pageAdminUrl, $pageSiteUrl);
-        }
     }
 
     /**
